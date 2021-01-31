@@ -1,0 +1,7 @@
+{
+    "PORT": 3000,
+    "DOCPORT": 4000,
+    "PROTOCOL": "https",
+    "EXECMODE": "production",
+    "RPCCOMMANDS": ["*"]
+}
