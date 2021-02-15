@@ -3,14 +3,14 @@
 # This build routine uses systemd-binfmt to compile target architectures
 # in their native containers emulated in amd64.
 
-IMAGE_NAME=ghcr.io/renlord/clightning
-VERSION="v0.9.3"
+IMAGE_NAME=ghcr.io/renlord/spark-server
+VERSION="v0.2.17"
 ARCHS=(arm64v8 arm32v7 amd64)
-
+#
 for arch in "${ARCHS[@]}"; do
     echo "building for $arch"
     podman image rm -f $IMAGE_NAME:$arch
-    podman build --build-arg "VER=$VERSION" --build-arg "ARCH=$arch"  --no-cache -f Dockerfile . -t "$IMAGE_NAME":"$arch" && \
+    podman build --build-arg "VERSION=$VERSION" --build-arg "ARCH=$arch"  --no-cache -f Dockerfile . -t "$IMAGE_NAME":"$arch" && \
         podman push "$IMAGE_NAME":"$arch"
 done
 
@@ -24,5 +24,3 @@ podman manifest create $IMAGE_NAME && \
     podman manifest push --format v2s2 --all $IMAGE_NAME docker://$IMAGE_NAME:latest && \
     podman manifest push --format v2s2 --all --purge $IMAGE_NAME docker://$IMAGE_NAME:$VERSION
 echo "DONE"
-
-rm -rf clightning
