@@ -15,12 +15,12 @@ LABEL org.opencontainers.image.source https://github.com/renlord/container-image
 
 RUN printenv && \
     apk add --no-cache sqlite python3 gmp libgcc openssl \
-        boost boost-program_options \
+        boost boost-program_options drill \
         libevent libzmq su-exec tzdata socat tini && \
     apk add --no-cache --virtual .build-deps \
         autoconf automake build-base libtool \
         sqlite-dev zlib-dev gmp-dev wget libarchive-tools && \
-    wget https://github.com/ElementsProject/lightning/releases/download/${VERSION}/clightning-${VERSION}.zip && \
+    wget -4 https://github.com/ElementsProject/lightning/releases/download/${VERSION}/clightning-${VERSION}.zip && \
     bsdtar xf clightning-$VERSION.zip && \
     rm clightning-$VERSION.zip && \
     ln /usr/bin/python3 /usr/bin/python && \
@@ -44,4 +44,4 @@ VOLUME ["/store", "/config", "/plugins"]
 # 7888 unix domain socket forwarded to TCP listen
 EXPOSE 9735 7888
 
-ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
+ENTRYPOINT ["tini", "-g", "--", "/entrypoint.sh"]
