@@ -3,7 +3,8 @@
 # This build routine uses systemd-binfmt to compile target architectures
 # in their native containers emulated in amd64.
 
-IMAGE_NAME=docker.io/pocoyo/bitcoin
+IMAGE_NAME=ghcr.io/renlord/bitcoin
+
 VERSION=v0.21.0
 ARCHS=(arm64v8 arm32v7 amd64)
 
@@ -22,6 +23,6 @@ podman manifest create $IMAGE_NAME && \
     # docker prefers v2s2 manifest format over oci.
     podman manifest push --format v2s2 --all $IMAGE_NAME docker://$IMAGE_NAME:latest && \
     podman manifest push --format v2s2 --all --purge $IMAGE_NAME docker://$IMAGE_NAME:$VERSION
-echo "DONE"
+
 
 rm -rf bitcoin

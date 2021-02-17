@@ -8,6 +8,8 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENV VERSION=${VERSION}
 
+LABEL org.opencontainers.image.source https://github.com/renlord/container-images
+
 RUN printenv && \
     apk add --no-cache --virtual .build-deps \
         autoconf automake boost-dev build-base \
