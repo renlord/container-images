@@ -1,0 +1,6 @@
+version: '3.7'
+services:
+    clightning-rest:
+        image: ghcr.io/renlord/clightning-rest:v0.4.3
+        volumes:
+          - /config/clightning-rest/cl-rest-config.json:/c-lightning-REST/cl-rest-config.json:ro
