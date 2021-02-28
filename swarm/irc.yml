@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  bouncer:
+    znc:
+      image: pocoyo/znc:latest
+      volumes:
+        - /mnt/roberto-nas/config/znc:/config/znc
+      environment:
+        - TORHOST=onionbox
+      networks:
+        - web
+        - tor
+      ports:
+        - target: 36666
+          published: 36666
+          protocol: tcp
+          mode: host
+      deploy:
+        replicas: 1
+        placement:
+          constraints:
+            - node.hostname == sleepybird
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.znc.rule: Host(`znc.eq908.renlord.com`)
+          traefik.http.routers.znc.tls: "true"
+          traefik.http.routers.znc.middlewares: znc-chain
+          traefik.http.middlewares.znc-chain.chain.middlewares: "strict-https@file,local-only@file,auth-admin@file"
+          traefik.http.routers.znc.service: znc
+          traefik.http.services.znc.loadbalancer.server.port: 8080
+
+networks:
+  web:
+    external: true
+  tor:
+    external: true
+
+# vim: set syntax=yaml ts=2 sts=2 sw=2:
