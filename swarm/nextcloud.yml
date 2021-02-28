@@ -1,6 +1,6 @@
 version: '3.9'
 services:
-  server:
+  nextcloud:
     image: ghcr.io/renlord/nextcloud:21
     environment:
       - TZ=Australia/Melbourne
@@ -8,21 +8,20 @@ services:
       - MYSQL_ROOT_PASSWORD=/run/secrets/nextcloud_mysql-root-password
       - MYSQL_PASSWORD=/run/secrets/nextcloud_mysql-password
       - MYSQL_USER=/run/secrets/nextcloud_mysql-user
-      - MYSQL_HOST=db
-      - TRUSTED_PROXIES=10.0.0.0/8
+      - MYSQL_HOST=mariadb
     secrets:
       - nextcloud_mysql-root-password
       - nextcloud_mysql-password
       - nextcloud_mysql-user
     networks:
-      - web
       - internal
+      - web
     volumes:
       - /mnt/roberto-nas/store/nextcloud/data:/var/www/html/data
       - /mnt/roberto-nas/store/nextcloud/config:/var/www/html/config
       - /mnt/roberto-nas/store/nextcloud/custom_apps:/var/www/html/custom_apps
     depends_on:
-      - db
+      - mariadb
     deploy:
       replicas: 1
       placement:
@@ -49,7 +48,7 @@ services:
       timeout: 10s
       retries: 6
 
-  db:
+  mariadb:
     image: mariadb:10.5
     environment:
       - MYSQL_ROOT_PASSWORD=/run/secrets/nextcloud_mysql-root-password
@@ -67,8 +66,6 @@ services:
 
 networks:
   web:
-    external: true
-  tor:
     external: true
   internal:
 
