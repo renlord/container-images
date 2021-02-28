@@ -3,9 +3,9 @@
 # This build routine uses systemd-binfmt to compile target architectures
 # in their native containers emulated in amd64.
 
-BASE_IMAGE=docker.io/library/nextcloud:apache
-IMAGE_NAME=ghcr.io/renlord/nextcloud
 VERSION=21
+BASE_IMAGE=docker.io/library/nextcloud:$VERSION-apache
+IMAGE_NAME=ghcr.io/renlord/nextcloud
 ARCHS=(arm64 arm amd64)
 
 for arch in ${ARCHS[@]}; do
