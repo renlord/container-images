@@ -1,0 +1,66 @@
+version: '3.7'
+services:
+  owntracks-recorder:
+    image: ghcr.io/renlord/owntracks-recorder:0.8.6
+    networks:
+      - web
+    volumes:
+      - /mnt/eq908-media-nfs/config/owntracks/ot-recorder.conf:/config/recorder.conf:ro
+      - /mnt/eq908-media-nfs/store/owntracks:/store
+    environment:
+      - TZ=Australia/Melbourne
+      - LUA_GOTIFY_URL=gotify
+      - LUA_GOTIFY_TOKEN=/run/secrets/owntracks_lua-gotify-token
+    secrets:
+      - owntracks_lua-gotify-token
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == elly
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.owntracks.rule: Host(`owntracks.eq908.renlord.com`)
+        traefik.http.routers.owntracks.tls: "true"
+        traefik.http.routers.owntracks.middlewares: owntracks-chain
+        traefik.http.middlewares.owntracks-chain.chain.middlewares: "strict-https@file,auth-users@file"
+        traefik.http.routers.owntracks.service: owntracks
+        traefik.http.services.owntracks.loadbalancer.server.port: 8083
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+
+  owntracks-ui:
+    image: ghcr.io/renlord/owntracks-web:v2.8.0
+    networks:
+      - web
+    environment:
+      - SERVER_HOST=owntracks-recorder
+      - SERVER_PORT=8083
+    deploy:
+      replicas: 1
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.owntracks-web.rule: Host(`owntracks-web.eq908.renlord.com`)
+        traefik.http.routers.owntracks-web.tls: "true"
+        traefik.http.routers.owntracks-web.middlewares: owntracks-web-chain
+        traefik.http.middlewares.owntracks-web-chain.chain.middlewares: "strict-https@file,auth-users@file"
+        traefik.http.routers.owntracks-web.service: owntracks-web
+        traefik.http.services.owntracks-web.loadbalancer.server.port: 80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+
+networks:
+  web:
+    external: true
+
+secrets:
+  owntracks_lua-gotify-token:
+    external: true
+
+# vim: set syntax=yaml ts=2 sts=2 sw=2:

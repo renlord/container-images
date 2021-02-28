@@ -1,0 +1,83 @@
+version: '3.9'
+services:
+  server:
+    image: ghcr.io/renlord/nextcloud:21
+    environment:
+      - TZ=Australia/Melbourne
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_ROOT_PASSWORD=/run/secrets/nextcloud_mysql-root-password
+      - MYSQL_PASSWORD=/run/secrets/nextcloud_mysql-password
+      - MYSQL_USER=/run/secrets/nextcloud_mysql-user
+      - MYSQL_HOST=db
+      - TRUSTED_PROXIES=10.0.0.0/8
+    secrets:
+      - nextcloud_mysql-root-password
+      - nextcloud_mysql-password
+      - nextcloud_mysql-user
+    networks:
+      - web
+      - internal
+    volumes:
+      - /mnt/roberto-nas/store/nextcloud/data:/var/www/html/data
+      - /mnt/roberto-nas/store/nextcloud/config:/var/www/html/config
+      - /mnt/roberto-nas/store/nextcloud/custom_apps:/var/www/html/custom_apps
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == dodo
+      resources:
+        limits:
+          memory: "8G"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.nextcloud.rule: Host(`cloud.eq908.renlord.com`)
+        traefik.http.routers.nextcloud.tls: "true"
+        traefik.http.routers.nextcloud.middlewares: nextcloud-chain
+        traefik.http.middlewares.nextcloud-redirect.redirectregex.regex: 'https://(.*)/.well-known/(card|cal)dav'
+        traefik.http.middlewares.nextcloud-redirect.redirectregex.replacement: 'https://$$1/remote.php/dav/'
+        traefik.http.middlewares.nextcloud-headers.headers.customresponseheaders.X-Frame-Options: "sameorigin"
+        traefik.http.middlewares.nextcloud-headers.headers.customrequestheaders.X-Frame-Options: "sameorigin"
+        traefik.http.middlewares.nextcloud-chain.chain.middlewares: "strict-https@file,nextcloud-headers,nextcloud-redirect"
+        traefik.http.routers.nextcloud.service: nextcloud
+        traefik.http.services.nextcloud.loadbalancer.server.port: 80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 60s
+      timeout: 10s
+      retries: 6
+
+  db:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=/run/secrets/nextcloud_mysql-root-password
+    secrets:
+      - nextcloud_mysql-root-password
+    volumes:
+      - /mnt/roberto-nas/dbs/nextcloud-mariadb:/var/lib/mysql
+    networks:
+      - internal
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == roberto
+
+networks:
+  web:
+    external: true
+  tor:
+    external: true
+  internal:
+
+secrets:
+  nextcloud_mysql-root-password:
+    external: true
+  nextcloud_mysql-password:
+    external: true
+  nextcloud_mysql-user:
+    external: true
+
+# vim: set syntax=yaml ts=2 sts=2 sw=2:

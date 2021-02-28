@@ -1,0 +1,107 @@
+version: '3.7'
+services:
+  bitcoin:
+    image: ghcr.io/renlord/bitcoin:v0.21.0
+    volumes:
+      - /mnt/roberto-nas/config/bitcoin:/config
+      - /home/renlord/bitcoin-data:/store
+    ports:
+      - target: 8332
+        published: 8332
+        protocol: tcp
+        mode: host
+    environment:
+      - TORHOST=onionbox
+      - TZ=Australia/Melbourne
+    networks:
+      - tor
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == dodo
+      resources:
+        limits:
+          memory: "800M"
+
+  clightning:
+    image: ghcr.io/renlord/clightning:v0.9.3
+    volumes:
+      - /mnt/roberto-nas/config/clightning:/config
+      - /mnt/roberto-nas/store/clightning:/store
+      - /home/renlord/bitcoin-data:/bitcoin-data
+    ports:
+      - target: 9735
+        published: 9735
+        protocol: tcp
+        mode: host
+    environment:
+      - TORHOST=onionbox
+      - TZ=Australia/Melbourne
+    networks:
+      - tor
+      - lightning
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == dodo
+      resources:
+        limits:
+          memory: "300M"
+
+  clightning-spark:
+    image: ghcr.io/renlord/spark-server:v0.2.17
+    volumes:
+      - /mnt/roberto-nas/config/spark-server:/config
+      - /mnt/roberto-nas/store/spark-server:/store
+    environment:
+      - TZ=Australia/Melbourne
+    networks:
+      - lightning
+      - web
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: "300M"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.spark-server.rule: Host(`lightning-spark.eq908.renlord.com`)
+        traefik.http.routers.spark-server.tls: "true"
+        traefik.http.routers.spark-server.middlewares: spark-server-chain
+        traefik.http.middlewares.spark-server-chain.chain.middlewares: "strict-https@file,local-only@file"
+        traefik.http.routers.spark-server.service: spark-server
+        traefik.http.services.spark-server.loadbalancer.server.port: 9737
+
+  clightning-rest:
+    image: ghcr.io/renlord/clightning-rest:v0.4.3
+    environment:
+      - TZ=Australia/Melbourne
+    volumes:
+      - /mnt/roberto-nas/config/clightning-rest/cl-rest-config.json:/c-lightning-REST/cl-rest-config.json:ro
+    networks:
+      - lightning
+      - web
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: "300M"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.clightningrest.tls: "true"
+        traefik.http.routers.clightningrest.rule: Host(`lightning-rest.eq908.renlord.com`)
+        traefik.http.routers.clightningrest.middlewares: clightningrest-middleware-chain
+        traefik.http.middlewares.clightningrest-middleware-chain.chain.middlewares: "strict-https@file,local-only@file"
+        traefik.http.routers.clightningrest.service: clightningrest
+        traefik.http.services.clightningrest.loadbalancer.server.port: 3001
+
+networks:
+  web:
+    external: true
+  tor:
+    external: true
+  lightning:
+
+# vim: set syntax=yaml ts=2 sts=2 sw=2:

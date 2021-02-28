@@ -1,0 +1,90 @@
+version: '3.9'
+services:
+  traefik:
+    image: traefik:v2.4.0
+    command:
+      - "--configFile=/traefik-config.toml"
+    volumes:
+      - /mnt/eq908-media-nfs/config/traefik/traefik-config.toml.v2:/traefik-config.toml:ro
+      - /mnt/eq908-media-nfs/config/traefik/static-provider.toml:/static-provider.toml:ro
+      - /mnt/eq908-media-nfs/store/traefik/acme:/etc/traefik/acme
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+    ports:
+      - target: 443
+        published: 8443
+        protocol: tcp
+        mode: host
+      - target: 80
+        published: 8080
+        protocol: tcp
+        mode: host
+    environment:
+      - CF_API_EMAIL=/run/secrets/cf_email
+      - CF_API_KEY=/run/secrets/api-key
+      - TZ=Australia/Melbourne
+    secrets:
+       - cf_email
+       - cf_api-key
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == sleepybird
+      replicas: 1
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.traefik.rule: "Host(`traefik.eq908.renlord.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        traefik.http.routers.traefik.tls: "true"
+        traefik.http.routers.traefik.tls.certresolver: "cloudflare"
+        traefik.http.routers.traefik.tls.domains[0].main: "*.eq908.renlord.com"
+        traefik.http.routers.traefik.middlewares: traefik-chain
+        traefik.http.middlewares.traefik-chain.chain.middlewares: "auth-admin@file,strict-https@file"
+        traefik.http.routers.traefik.service: "api@internal"
+        traefik.http.services.traefik.loadbalancer.server.port: 8080
+
+  onionbox:
+    image: ghcr.io/renlord/onionbox:v20.2
+    volumes:
+      - /mnt/eq908-media-nfs/config/onionbox/theonionbox.cfg:/config/theonionbox.cfg:ro
+      - /mnt/eq908-media-nfs/config/onionbox/torrc:/config/torrc:ro
+    environment:
+      - HOSTNAME=eq908-onionbox
+    networks:
+      - web
+      - tor
+    deploy:
+      replicas: 1
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.onionbox.rule: Host(`onionbox.eq908.renlord.com`)
+        traefik.http.routers.onionbox.tls: "true"
+        traefik.http.routers.onionbox.middlewares: onionbox-chain
+        traefik.http.middlewares.onionbox-chain.chain.middlewares: "strict-https@file,auth-admin@file"
+        traefik.http.routers.onionbox.service: onionbox
+        traefik.http.services.onionbox.loadbalancer.server.port: 8080
+
+  ddclient:
+    image: ghcr.io/linuxserver/ddclient:version-v3.9.1
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Australia/Melbourne
+    volumes:
+      - /mnt/eq908-media-nfs/config/ddclient:/config
+    deploy:
+      replicas: 1
+
+networks:
+  web:
+    external: true
+  tor:
+    external: true
+
+secrets:
+  cf_email:
+    external: true
+  cf_api-key:
+    external: true
+
+# vim: set syntax=yaml ts=2 sts=2 sw=2:
