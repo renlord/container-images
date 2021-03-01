@@ -7,7 +7,6 @@ ARG VERSION
 RUN apk add --no-cache --virtual .build-deps libarchive-tools wget \
         nodejs npm && \
     npm install -g yarn && \
-    apk add --no-cache nginx gettext curl && \
     wget https://github.com/owntracks/frontend/archive/$VERSION.tar.gz && \
     bsdtar xf $VERSION.tar.gz && \
     mv frontend-${VERSION:1} source && \
@@ -18,7 +17,9 @@ RUN apk add --no-cache --virtual .build-deps libarchive-tools wget \
 FROM ${ARCH}/alpine
 
 RUN mkdir -p /usr/share/nginx/ && \
-    mkdir -p /run/nginx/
+    mkdir -p /run/nginx/ && \
+    apk add --no-cache nginx gettext curl
+
 
 COPY --from=builder /source/dist /usr/share/nginx/html
 
