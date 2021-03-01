@@ -15,7 +15,7 @@ RUN apk add --no-cache --virtual .build-deps \
         musl-dev mosquitto-dev wget alpine-sdk \
         luarocks libarchive-tools \
     && apk add --no-cache \
-        libcurl libconfig-dev mosquitto-dev lmdb-dev libsodium-dev lua5.2-dev musl curl jq \
+        libcurl libconfig-dev mosquitto-dev lmdb-dev libsodium-dev lua5.2-dev musl curl jq tini \
     && luarocks-5.2 install Lua-cURL \
     && wget https://github.com/owntracks/recorder/archive/${VERSION}.tar.gz \
     && bsdtar xvf ${VERSION}.tar.gz \
@@ -35,6 +35,7 @@ RUN apk add --no-cache --virtual .build-deps \
 VOLUME ["/store", "/config"]
 
 COPY recorder.conf /config/recorder.conf
+COPY lua/   lua/
 
 HEALTHCHECK CMD /usr/local/sbin/recorder-health.sh
 
