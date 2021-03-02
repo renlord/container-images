@@ -2,7 +2,7 @@ version: '3.9'
 services:
   bouncer:
     znc:
-      image: pocoyo/znc:latest
+      image: ghcr.io/renlord/znc:latest
       volumes:
         - /mnt/roberto-nas/config/znc:/config/znc
       environment:
