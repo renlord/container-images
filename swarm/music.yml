@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  airsonic:
+    image: ghcr.io/linuxserver/airsonic:version-v10.6.2
+    environment:
+      - PUID=900
+      - PGID=900
+      - TZ=Australia/Melbourne
+    volumes:
+      - /mnt/roberto-nas/config/airsonic:/config
+      - /mnt/eq908-media-nfs/data/Media/Music:/music
+    networks:
+      - web
+    deploy:
+      replicas: 1
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.airsonic.tls: "true"
+        traefik.http.routers.airsonic.rule: Host(`airsonic.eq908.renlord.com`)
+        traefik.http.routers.airsonic.middlewares: airsonic-middleware-chain
+        traefik.http.middlewares.airsonic-middleware-chain.chain.middlewares: "strict-https-frame-exempt@file"
+        traefik.http.middlewares.airsonic-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"
+        traefik.http.middlewares.airsonic-headers.headers.customrequestheaders.X-Frame-Options: "sameorigin"
+        traefik.http.middlewares.airsonic-headers.headers.customresponseheaders.X-Frame-Options: "sameorigin"
+        traefik.http.routers.airsonic.service: airsonic
+        traefik.http.services.airsonic.loadbalancer.server.port: 4040
+      resources:
+        limits:
+          memory: "4G"
+
+networks:
+  web:
+    external: true

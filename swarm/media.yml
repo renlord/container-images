@@ -11,9 +11,6 @@ services:
       - /mnt/eq908-media-nfs/config/jellyfin:/config
       - /mnt/eq908-media-nfs/data:/media
       - /mnt/eq908-media-nfs/cache/jellyfin:/cache
-    devices:
-      - /dev/dri/card0:/dev/dri/card0
-      - /dev/dri/renderD128:/dev/dri/renderD128
     deploy:
       placement:
         constraints:
@@ -90,7 +87,6 @@ services:
 
   flood:
     image: pocoyo/flood:arm64v8
-    restart: unless-stopped
     tty: true
     environment:
       - PUID=900
@@ -149,7 +145,7 @@ services:
         traefik.http.routers.calibre.middlewares: calibre-chain
         traefik.http.middlewares.calibre-headers.headers.customrequestheaders.X-Script-Name: "/calibre-web"
         traefik.http.middlewares.calibre-headers.headers.customrequestheaders.X-Scheme: "https"
-        traefik.http.middlewares.calibre-chain.chain.middlewares: "strict-https@file,calibre-headers,auth-users@file"
+        traefik.http.middlewares.calibre-chain.chain.middlewares: "strict-https@file,calibre-headers"
         traefik.http.routers.calibre.service: calibre
         traefik.http.services.calibre.loadbalancer.server.port: 8083
     healthcheck:
