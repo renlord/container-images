@@ -1,0 +1,47 @@
+##########################################################
+# Traefik V2 Middlewares
+##########################################################
+[http.middlewares]
+    [http.middlewares.auth-admin.basicAuth]
+    users = []
+    [http.middlewares.auth-users.basicAuth]
+    # USE UNIX password to retrieve password!
+    users = []
+    [http.middlewares.strict-https.headers]
+        sslRedirect = true
+        forceSTSHeader = true
+        STSIncludeSubdomains = true
+        STSSeconds = 315360000
+        STSPreload = true
+        frameDeny = true
+    [http.middlewares.strict-https-frame-exempt.headers]
+        sslRedirect = true
+        forceSTSHeader = true
+        STSIncludeSubdomains = true
+        STSSeconds = 315360000
+        STSPreload = true
+    [http.middlewares.local-only.ipWhiteList]
+        sourceRange = ["192.168.1.0/24", "127.0.0.1/32"]
+
+##########################################################
+# TLS Strictness
+##########################################################
+[tls.options]
+    [tls.options.default]
+	minVersion = "VersionTLS12"
+	sniStrict = true
+	cipherSuites = [
+	    "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+	    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+	    "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+	    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+	    "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+	    "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+	    "TLS_RSA_WITH_AES_128_GCM_SHA256",
+	    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+	    "TLS_AES_128_GCM_SHA256",
+	    "TLS_AES_256_GCM_SHA384",
+	    "TLS_CHACHA20_POLY1305_SHA256"
+	]
+
+# vim: set syntax=toml ts=4 sts=4 sw=2:

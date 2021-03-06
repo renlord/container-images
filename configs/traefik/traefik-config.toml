@@ -1,0 +1,73 @@
+[accessLog]
+  bufferingSize = 100
+
+[log]
+  level = "INFO"
+
+##########################################################
+# Traefik V2 Entrypoints
+##########################################################
+[entryPoints]
+    [entryPoints.web]
+        address = ":80"
+        [entryPoints.web.http]
+	    [entryPoints.web.http.redirections]
+	        [entryPoints.web.http.redirections.entryPoint]
+	            to = "web-secure"
+	            scheme = "https"
+	            permanent = true
+    [entryPoints.web-secure]
+        address = ":443"
+
+##########################################################
+# Traefik V2 Providers
+##########################################################
+[providers]
+    [providers.docker]
+        exposedbydefault = false
+        swarmMode = true
+        #useBindPortIP = true
+        network = "web"
+        endpoint = "unix:///var/run/docker.sock"
+    [providers.file]
+    	filename="/static-provider.toml"
+
+[api]
+    dashboard = true
+
+##########################################################
+# Traefik V2 Certificate Resolver
+#
+# responsibility of renewing cetificate using ACME is delegated to the
+# traefik container.
+#
+# labels:
+#   - traefik.http.routers.traefik.rule=Host(`traefik.eq908.renlord.com`)
+#   - traefik.http.routers.traefik.tls=true
+#   - traefik.http.routers.traefik.tls.certresolver=cf
+#   - traefik.http.routers.traefik.domains[0].main=eq908.renlord.com
+#   - traefik.http.routers.traefik.domains[0].sans=*.eq908.renlord.com
+#   - traefik.http.routers.traefik.middlewares=traefik-chain
+#   - "traefik.http.middlewares.traefik-chain.chain.middlewares=auth-admin,strict-https"
+#   - traefik.http.routers.traefik.service=traefik
+#
+##########################################################
+[certificatesResolvers.cloudflare.acme]
+    email = "traefik-acme@renlord.com"
+    storage = "/etc/traefik/acme/acme.json"
+    #caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+    preferredChain = "ISRG Root X1"
+    keyType = "EC384"
+    [certificatesResolvers.cloudflare.acme.dnsChallenge]
+         # Additional ENV VAR required:
+         # CF_API_EMAIL, CF_API_KEY or CF_DNS_API_TOKEN, [CF_ZONE_API_TOKEN]
+         provider = "cloudflare"
+         delayBeforeCheck = 0
+
+
+#########################################################
+# Template for Docker Service
+#########################################################
+#labels:
+#    - traefik.http.routers.my-container.rule=Host(`*.eq908.renlord.com`)
+#    - 
