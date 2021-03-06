@@ -5,9 +5,9 @@ services:
     command:
       - "--configFile=/traefik-config.toml"
     volumes:
-      - /mnt/eq908-media-nfs/config/traefik/traefik-config.toml.v2:/traefik-config.toml:ro
-      - /mnt/eq908-media-nfs/config/traefik/static-provider.toml:/static-provider.toml:ro
-      - /mnt/eq908-media-nfs/store/traefik/acme:/etc/traefik/acme
+      - /mnt/roberto-nas/config/traefik/traefik-config.toml:/traefik-config.toml:ro
+      - /mnt/roberto-nas/config/traefik/static-provider.toml:/static-provider.toml:ro
+      - /mnt/roberto-nas/store/traefik/acme:/etc/traefik/acme
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - web
@@ -21,12 +21,12 @@ services:
         protocol: tcp
         mode: host
     environment:
-      - CF_API_EMAIL=/run/secrets/cf_email
-      - CF_API_KEY=/run/secrets/api-key
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns-api-token
+      - CF_ZONE_API_TOKEN_FILE=/run/secrets/cf_zone-api-token
       - TZ=Australia/Melbourne
     secrets:
-       - cf_email
-       - cf_api-key
+       - cf_dns-api-token
+       - cf_zone-api-token
     deploy:
       placement:
         constraints:
@@ -82,9 +82,9 @@ networks:
     external: true
 
 secrets:
-  cf_email:
+  cf_dns-api-token:
     external: true
-  cf_api-key:
+  cf_zone-api-token:
     external: true
 
 # vim: set syntax=yaml ts=2 sts=2 sw=2:
