@@ -19,11 +19,12 @@ RUN apk add --no-cache --virtual .build-deps \
     && luarocks-5.2 install Lua-cURL \
     && wget https://github.com/owntracks/recorder/archive/${VERSION}.tar.gz \
     && bsdtar xvf ${VERSION}.tar.gz \
+    && rm *.tar.gz \
     && mv recorder-${VERSION} /usr/local/source \
     && mkdir -p /config \
     && cd /usr/local/source \
     && mv /config.mk ./ \
-    && cp -r contrib/lua /lua \
+    && mkdir -p /lua \
     && make \
     ; make install \
     ; cd / \
