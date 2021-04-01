@@ -4,7 +4,7 @@
 # in their native containers emulated in amd64.
 
 IMAGE_NAME=ghcr.io/renlord/clightning
-VERSION="v0.9.3"
+VERSION="v0.10.0"
 ARCHS=(arm64v8 arm32v7 amd64)
 
 for arch in "${ARCHS[@]}"; do

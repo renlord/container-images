@@ -25,7 +25,7 @@ services:
           memory: "800M"
 
   clightning:
-    image: ghcr.io/renlord/clightning:v0.9.3
+    image: ghcr.io/renlord/clightning:v0.10.0
     volumes:
       - /mnt/roberto-nas/config/clightning:/config
       - /mnt/roberto-nas/store/clightning:/store
@@ -80,6 +80,7 @@ services:
       - TZ=Australia/Melbourne
     volumes:
       - /mnt/roberto-nas/config/clightning-rest/cl-rest-config.json:/c-lightning-REST/cl-rest-config.json:ro
+      - /mnt/roberto-nas/store/clightning-rest/certs:/c-lightning-REST/certs:ro
     networks:
       - lightning
       - web
