@@ -22,7 +22,7 @@ services:
             - node.hostname == sleepybird
         labels:
           traefik.enable: "true"
-          traefik.http.routers.znc.rule: Host(`znc.eq908.renlord.com`)
+          traefik.http.routers.znc.rule: Host(`znc.rny.app`)
           traefik.http.routers.znc.tls: "true"
           traefik.http.routers.znc.middlewares: znc-chain
           traefik.http.middlewares.znc-chain.chain.middlewares: "strict-https@file,local-only@file,auth-admin@file"

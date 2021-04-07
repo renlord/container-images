@@ -13,7 +13,7 @@ services:
       replicas: 1
       labels:
         traefik.enable: "true"
-        traefik.http.routers.gotify.rule: Host(`gotify.eq908.renlord.com`)
+        traefik.http.routers.gotify.rule: Host(`gotify.rny.app`)
         traefik.http.routers.gotify.tls: "true"
         traefik.http.routers.gotify.middlewares: gotify-chain
         traefik.http.middlewares.gotify-chain.chain.middlewares: "strict-https@file"

@@ -16,7 +16,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.airsonic.tls: "true"
-        traefik.http.routers.airsonic.rule: Host(`airsonic.eq908.renlord.com`)
+        traefik.http.routers.airsonic.rule: Host(`airsonic.rny.app`)
         traefik.http.routers.airsonic.middlewares: airsonic-middleware-chain
         traefik.http.middlewares.airsonic-middleware-chain.chain.middlewares: "strict-https-frame-exempt@file"
         traefik.http.middlewares.airsonic-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"

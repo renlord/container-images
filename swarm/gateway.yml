@@ -34,10 +34,10 @@ services:
       replicas: 1
       labels:
         traefik.enable: "true"
-        traefik.http.routers.traefik.rule: "Host(`traefik.eq908.renlord.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        traefik.http.routers.traefik.rule: "Host(`traefik.rny.app`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         traefik.http.routers.traefik.tls: "true"
         traefik.http.routers.traefik.tls.certresolver: "cloudflare"
-        traefik.http.routers.traefik.tls.domains[0].main: "*.eq908.renlord.com"
+        traefik.http.routers.traefik.tls.domains[0].main: "*.rny.app"
         traefik.http.routers.traefik.middlewares: traefik-chain
         traefik.http.middlewares.traefik-chain.chain.middlewares: "auth-admin@file,strict-https@file"
         traefik.http.routers.traefik.service: "api@internal"
@@ -46,8 +46,8 @@ services:
   onionbox:
     image: ghcr.io/renlord/onionbox:v20.2
     volumes:
-      - /mnt/eq908-media-nfs/config/onionbox/theonionbox.cfg:/config/theonionbox.cfg:ro
-      - /mnt/eq908-media-nfs/config/onionbox/torrc:/config/torrc:ro
+      - /mnt/roberto-nas/config/onionbox/theonionbox.cfg:/config/theonionbox.cfg:ro
+      - /mnt/roberto-nas/config/onionbox/torrc:/config/torrc:ro
     environment:
       - HOSTNAME=eq908-onionbox
     networks:
@@ -57,7 +57,7 @@ services:
       replicas: 1
       labels:
         traefik.enable: "true"
-        traefik.http.routers.onionbox.rule: Host(`onionbox.eq908.renlord.com`)
+        traefik.http.routers.onionbox.rule: Host(`onionbox.rny.app`)
         traefik.http.routers.onionbox.tls: "true"
         traefik.http.routers.onionbox.middlewares: onionbox-chain
         traefik.http.middlewares.onionbox-chain.chain.middlewares: "strict-https@file,auth-admin@file"
@@ -71,7 +71,7 @@ services:
       - PGID=1000
       - TZ=Australia/Melbourne
     volumes:
-      - /mnt/eq908-media-nfs/config/ddclient:/config
+      - /mnt/roberto-nas/config/ddclient:/config
     deploy:
       replicas: 1
 

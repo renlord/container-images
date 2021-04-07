@@ -21,7 +21,7 @@ services:
           - node.hostname == roberto
       labels:
         traefik.enable: "true"
-        traefik.http.routers.owntracks.rule: Host(`owntracks.eq908.renlord.com`)
+        traefik.http.routers.owntracks.rule: Host(`owntracks.rny.app`)
         traefik.http.routers.owntracks.tls: "true"
         traefik.http.routers.owntracks.middlewares: owntracks-chain
         traefik.http.middlewares.owntracks-chain.chain.middlewares: "strict-https@file,auth-users@file"
@@ -44,7 +44,7 @@ services:
       replicas: 1
       labels:
         traefik.enable: "true"
-        traefik.http.routers.owntracks-web.rule: Host(`owntracks-web.eq908.renlord.com`)
+        traefik.http.routers.owntracks-web.rule: Host(`owntracks-web.rny.app`)
         traefik.http.routers.owntracks-web.tls: "true"
         traefik.http.routers.owntracks-web.middlewares: owntracks-web-chain
         traefik.http.middlewares.owntracks-web-chain.chain.middlewares: "strict-https@file,auth-users@file"

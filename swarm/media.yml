@@ -19,7 +19,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.jellyfin.tls: "true"
-        traefik.http.routers.jellyfin.rule: Host(`stream.eq908.renlord.com`)
+        traefik.http.routers.jellyfin.rule: Host(`stream.rny.app`)
         traefik.http.routers.jellyfin.middlewares: jellyfin-middleware-chain
         traefik.http.middlewares.jellyfin-middleware-chain.chain.middlewares: "strict-https@file"
         traefik.http.routers.jellyfin.service: jellyfin
@@ -42,7 +42,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.jackett.tls: "true"
-        traefik.http.routers.jackett.rule: Host(`torrent-index.eq908.renlord.com`)
+        traefik.http.routers.jackett.rule: Host(`torrent-index.rny.app`)
         traefik.http.routers.jackett.middlewares: jackett-middleware-chain
         traefik.http.middlewares.jackett-middleware-chain.chain.middlewares: "strict-https@file"
         traefik.http.routers.jackett.service: jackett
@@ -71,7 +71,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.sonarr.tls: "true"
-        traefik.http.routers.sonarr.rule: Host(`sonarr.eq908.renlord.com`)
+        traefik.http.routers.sonarr.rule: Host(`sonarr.rny.app`)
         traefik.http.routers.sonarr.middlewares: sonarr-middleware-chain
         traefik.http.middlewares.sonarr-middleware-chain.chain.middlewares: "strict-https@file,auth-admin@file"
         traefik.http.routers.sonarr.service: sonarr
@@ -109,7 +109,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.http.routers.flood.tls: "true"
-        traefik.http.routers.flood.rule: Host(`torrents.eq908.renlord.com`)
+        traefik.http.routers.flood.rule: Host(`torrents.rny.app`)
         traefik.http.routers.flood.middlewares: flood-middleware-chain
         traefik.http.middlewares.flood-middleware-chain.chain.middlewares: "strict-https@file"
         traefik.http.routers.flood.service: flood
@@ -140,7 +140,7 @@ services:
       replicas: 1
       labels:
         traefik.enable: "true"
-        traefik.http.routers.calibre.rule: Host(`library.eq908.renlord.com`)
+        traefik.http.routers.calibre.rule: Host(`library.rny.app`)
         traefik.http.routers.calibre.tls: "true"
         traefik.http.routers.calibre.middlewares: calibre-chain
         traefik.http.middlewares.calibre-headers.headers.customrequestheaders.X-Script-Name: "/calibre-web"
@@ -192,7 +192,7 @@ services:
     #    labels:
     #      traefik.enable: "true"
     #      traefik.http.routers.flood.tls: "true"
-    #      traefik.http.routers.flood.rule: Host(`torrents.eq908.renlord.com`)
+    #      traefik.http.routers.flood.rule: Host(`torrents.rny.app`)
     #      traefik.http.routers.flood.middlewares: flood-middleware-chain
     #      traefik.http.middlewares.flood-middleware-chain.chain.middlewares: "strict-https@file"
     #      traefik.http.routers.flood.service: flood

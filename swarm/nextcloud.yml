@@ -32,7 +32,7 @@ services:
           memory: "8G"
       labels:
         traefik.enable: "true"
-        traefik.http.routers.nextcloud.rule: Host(`cloud.eq908.renlord.com`)
+        traefik.http.routers.nextcloud.rule: Host(`cloud.rny.app`)
         traefik.http.routers.nextcloud.tls: "true"
         traefik.http.routers.nextcloud.middlewares: nextcloud-chain
         traefik.http.middlewares.nextcloud-redirect.redirectregex.regex: 'https://(.*)/.well-known/(card|cal)dav'
