@@ -10,7 +10,7 @@ services:
     volumes:
       - /mnt/eq908-media-nfs/config/jellyfin:/config
       - /mnt/eq908-media-nfs/data:/media
-      - /mnt/eq908-media-nfs/cache/jellyfin:/cache
+      - /mnt/eq908-media-nfs/jellyfin-cache:/cache
     deploy:
       placement:
         constraints:
@@ -33,7 +33,7 @@ services:
     environment:
       - TZ=Australia/Melbourne
     volumes:
-      - /mnt/eq908-media-nfs/config/jackett:/config
+      - /mnt/roberto-nas/config/jackett:/config
       - /downloads
     networks:
       - web
@@ -65,7 +65,7 @@ services:
       - PGID=900
     volumes:
       - /mnt/eq908-media-nfs/:/mnt/eq908-media-nfs/
-      - /mnt/eq908-media-nfs/config/sonarr:/config
+      - /mnt/roberto-nas/config/sonarr:/config
     deploy:
       replicas: 1
       labels:
@@ -96,7 +96,7 @@ services:
       - web
     volumes:
       - /mnt/eq908-media-nfs/data:/data
-      - /mnt/eq908-media-nfs/store/flood-db:/flood-db
+      - /mnt/roberto-nas/store/flood-db:/flood-db
     secrets:
       - flood_secret
     ports:
@@ -129,7 +129,7 @@ services:
   calibre:
     image: ghcr.io/linuxserver/calibre-web:version-0.6.10
     volumes:
-      - /mnt/eq908-media-nfs/config/calibre-web:/config
+      - /mnt/roberto-nas/config/calibre-web:/config
       - /mnt/eq908-media-nfs/data/book-library:/books
     environment:
       - PGID=900
@@ -162,7 +162,7 @@ services:
     #  networks:
     #    - torrent
     #  volumes:
-    #    - /mnt/eq908-media-nfs/data:/data
+    #    - /mnt/roberto-nas/data:/data
     #    - /mnt/roberto-nas/config/rtorrent/:/config
     #  environment:
     #    - HOME=/config
@@ -182,7 +182,7 @@ services:
     #    - torrent
     #    - web
     #  volumes:
-    #    - /mnt/eq908-media-nfs/data:/data
+    #    - /mnt/roberto-nas/data:/data
     #    - /mnt/roberto-nas/config/rtorrent:/config
     #  command: --port 3000 --allowedpath /data
     #  environment:
