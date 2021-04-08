@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   traefik:
-    image: traefik:v2.4.6
+    image: traefik:v2.4.8
     command:
       - "--configFile=/traefik-config.toml"
     volumes:
