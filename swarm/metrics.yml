@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  prometheus:
+    image: quay.io/prometheus/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus-config.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=${PROMETHEUS_RETENTION:-72h}'
+    volumes:
+      - prom_data:/prometheus
+      - /mnt/roberto-nas/config/prometheus/:/etc/prometheus/
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: root
+    networks:
+      - web
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == dodo
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.prom.rule: Host(`prom.rny.app`)
+        traefik.http.routers.prom.tls: "true"
+        traefik.http.routers.prom.middlewares: prom-chain
+        traefik.http.middlewares.prom-chain.chain.middlewares: "strict-https@file,auth-admin@file"
+        traefik.http.routers.prom.service: prom
+        traefik.http.services.prom.loadbalancer.server.port: 9090
+
+volumes:
+  prom_data:
+
+networks:
+  web:
+    external: true
+
+# vim: set syntax=yaml ts=2 sts=2 sw=2:
