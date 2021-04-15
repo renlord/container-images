@@ -43,6 +43,40 @@ services:
         traefik.http.routers.traefik.service: "api@internal"
         traefik.http.services.traefik.loadbalancer.server.port: 8080
 
+  adguard:
+    image: adguard/adguardhome:v0.105.2
+    networks:
+      - web
+    ports:
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+      - target: 67
+        published: 67
+        protocol: tcp
+        mode: host
+      - target: 67
+        published: 67
+        protocol: udp
+        mode: host
+    volumes:
+      - /mnt/roberto-nas/config/adguardhome/work:/opt/adguardhome/work
+      - /mnt/roberto-nas/config/adguardhome/conf:/opt/adguardhome/conf
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == dodo
+      replicas: 1
+      labels:
+        traefik.enable: "true"
+        adguard.http.routers.adguard.rule: "Host(`dns.rny.app`)"
+        adguard.http.routers.adguard.tls: "true"
+        adguard.http.routers.adguard.middlewares: adguard-chain
+        adguard.http.middlewares.adguard-chain.chain.middlewares: "strict-https@file,local-only@file"
+        adguard.http.routers.adguard.service: adguard
+        adguard.http.services.adguard.loadbalancer.server.port: 3000
+
   onionbox:
     image: ghcr.io/renlord/onionbox:v20.2
     volumes:
