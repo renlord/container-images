@@ -1,10 +1,10 @@
 version: '3.7'
 services:
   gotify:
-    image: pocoyo/gotify:2.0.16
+    image: pocoyo/gotify:2.0.22
     volumes:
-      - /mnt/eq908-media-nfs/config/gotify:/etc/gotify/
-      - /mnt/eq908-media-nfs/store/gotify:/data
+      - /mnt/roberto-nas/config/gotify:/etc/gotify/
+      - /mnt/roberto-nas/store/gotify:/data
     networks:
       - web
     environment:
