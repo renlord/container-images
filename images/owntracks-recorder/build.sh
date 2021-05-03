@@ -8,7 +8,7 @@ VERSION=0.8.5
 ARCHS=(arm64v8 arm32v7 amd64)
 for arch in ${ARCHS[@]}; do
     echo "building for $arch"
-    podman build --build-arg "ARCH=$arch" --build-arg "VERSION=$VERSION" --no-cache -f Dockerfile . -t $IMAGE_NAME:$arch && \
+    podman build --squash --build-arg "ARCH=$arch" --build-arg "VERSION=$VERSION" --no-cache -f Dockerfile . -t $IMAGE_NAME:$arch && \
         podman push $IMAGE_NAME:$arch
 done
 
