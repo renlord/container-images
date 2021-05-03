@@ -2,7 +2,7 @@
 --
 -- LUA_GOTIFY_URL
 
-local cURL = require "cURL"
+local cURL = require "cURL.safe"
 local gotify = {}
 
 local GOTIFY_URL=os.getenv("LUA_GOTIFY_URL")
