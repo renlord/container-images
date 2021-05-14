@@ -1,33 +1,32 @@
 version: '3.9'
 services:
-  bouncer:
-    znc:
-      image: ghcr.io/renlord/znc:latest
-      volumes:
-        - /mnt/roberto-nas/config/znc:/config/znc
-      environment:
-        - TORHOST=onionbox
-      networks:
-        - web
-        - tor
-      ports:
-        - target: 36666
-          published: 36666
-          protocol: tcp
-          mode: host
-      deploy:
-        replicas: 1
-        placement:
-          constraints:
-            - node.hostname == sleepybird
-        labels:
-          traefik.enable: "true"
-          traefik.http.routers.znc.rule: Host(`znc.rny.app`)
-          traefik.http.routers.znc.tls: "true"
-          traefik.http.routers.znc.middlewares: znc-chain
-          traefik.http.middlewares.znc-chain.chain.middlewares: "strict-https@file,local-only@file,auth-admin@file"
-          traefik.http.routers.znc.service: znc
-          traefik.http.services.znc.loadbalancer.server.port: 8080
+  znc:
+    image: ghcr.io/renlord/znc:latest
+    volumes:
+      - /mnt/roberto-nas/config/znc:/config/znc
+    environment:
+      - TORHOST=onionbox
+    networks:
+      - web
+      - tor
+    ports:
+      - target: 36666
+        published: 36666
+        protocol: tcp
+        mode: host
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == sleepybird
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.znc.rule: Host(`znc.rny.app`)
+        traefik.http.routers.znc.tls: "true"
+        traefik.http.routers.znc.middlewares: znc-chain
+        traefik.http.middlewares.znc-chain.chain.middlewares: "strict-https@file,local-only@file,auth-admin@file"
+        traefik.http.routers.znc.service: znc
+        traefik.http.services.znc.loadbalancer.server.port: 8080
 
 networks:
   web:

@@ -1,16 +1,17 @@
 version: '3.7'
 services:
   jellyfin:
-    image: jellyfin/jellyfin:10.6.4
+    image: jellyfin/jellyfin:10.7.5
     environment:
       - TZ=Australia/Melbourne
     networks:
       - web
     user: 900:900
     volumes:
-      - /mnt/eq908-media-nfs/config/jellyfin:/config
+      # jellyfin uses sqlite db file locking. incompatible and unsafe over NFS.
+      - /docker/config/jellyfin:/config
       - /mnt/eq908-media-nfs/data:/media
-      - /mnt/eq908-media-nfs/jellyfin-cache:/cache
+      - jellyfin-cache:/cache
     deploy:
       placement:
         constraints:
@@ -206,6 +207,9 @@ networks:
     external: true
   tor:
     external: true
+
+volumes:
+  jellyfin-cache:
 
 secrets:
   flood_secret:

@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   bitcoin:
-    image: ghcr.io/renlord/bitcoin:v0.21.0
+    image: ghcr.io/renlord/bitcoin:v0.21.1
     volumes:
       - /mnt/roberto-nas/config/bitcoin:/config
       - /home/renlord/bitcoin-data:/store
@@ -27,7 +27,8 @@ services:
   clightning:
     image: ghcr.io/renlord/clightning:v0.10.0
     volumes:
-      - /mnt/roberto-nas/config/clightning:/config
+      # clightning locks PID file in con
+      - /docker/config/clightning:/config
       - /mnt/roberto-nas/store/clightning:/store
       - /home/renlord/bitcoin-data:/bitcoin-data
     ports:

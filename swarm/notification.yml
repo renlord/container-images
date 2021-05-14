@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   gotify:
-    image: pocoyo/gotify:2.0.22
+    image: ghcr.io/renlord/gotify:2.0.22
     volumes:
       - /mnt/roberto-nas/config/gotify:/etc/gotify/
       - /mnt/roberto-nas/store/gotify:/data
