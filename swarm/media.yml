@@ -30,7 +30,7 @@ services:
           memory: "8G"
 
   jackett:
-    image: ghcr.io/linuxserver/jackett:version-v0.17.437
+    image: ghcr.io/linuxserver/jackett:version-v0.18.145
     environment:
       - TZ=Australia/Melbourne
     volumes:
@@ -58,7 +58,7 @@ services:
       retries: 6
 
   sonarr:
-    image: ghcr.io/linuxserver/sonarr:version-2.0.0.5344
+    image: ghcr.io/linuxserver/sonarr:version-3.0.6.1196
     networks:
       - web
     environment:
@@ -68,6 +68,9 @@ services:
       - /mnt/eq908-media-nfs/:/mnt/eq908-media-nfs/
       - /mnt/roberto-nas/config/sonarr:/config
     deploy:
+      placement:
+        constraints:
+          - node.hostname == roberto
       replicas: 1
       labels:
         traefik.enable: "true"
