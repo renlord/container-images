@@ -64,6 +64,32 @@ services:
         constraints:
           - node.hostname == roberto
 
+  matrix_synapse:
+    image: matrixdotorg/synapse:v1.35.1
+    environment:
+      - SYNAPSE_SERVER_NAME=my.matrix.host
+      - SYNAPSE_REPORT_STATS=yes
+      - UID=900
+      - GID=900
+    volumes:
+      - matrix_synapse:/data
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == dodo
+      resources:
+        limits:
+          memory: "8G"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.synapse.rule: Host(`matrix.rny.app`)
+        traefik.http.routers.synapse.tls: "true"
+        traefik.http.routers.synapse.middlewares: matrix-chain
+        traefik.http.middlewares.synapse-chain.chain.middlewares: "strict-https@file"
+        traefik.http.routers.synapse.service: matrix_synapse
+        traefik.http.services.synapse.loadbalancer.server.port: 8008
+
 networks:
   web:
     external: true
@@ -76,5 +102,8 @@ secrets:
     external: true
   nextcloud_mysql-user:
     external: true
+
+volumes:
+  matrix_synapse:
 
 # vim: set syntax=yaml ts=2 sts=2 sw=2:
